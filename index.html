@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هدية ايندو 🖤</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:18px;background:radial-gradient(ellipse at top,#292333,#101016 55%,#050507);color:#f7f2ff;font-family:Arial,sans-serif}
+.container{width:100%;max-width:680px;margin:35px auto}
+.card{background:linear-gradient(145deg,#191720,#111116);border:1px solid #494052;border-radius:26px;padding:25px 20px;text-align:center;box-shadow:0 18px 50px #0009;margin-bottom:18px}
+h1{font-size:32px;color:#eee4ff}
+h2{color:#e1d3fa}
+p{font-size:17px;line-height:1.9;color:#c9c0d2}
+button{border:1px solid #8974aa;border-radius:15px;padding:14px 18px;background:linear-gradient(135deg,#665184,#332b43);color:white;font-size:17px;font-weight:bold;cursor:pointer}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.6}
+.primary{width:100%;margin-top:12px}
+.hidden{display:none!important}
+.icon{font-size:68px;margin:10px}
+.topline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pill{background:#292431;border:1px solid #51465f;padding:7px 12px;border-radius:30px}
+.progress{height:13px;background:#302b38;border-radius:20px;overflow:hidden;margin:15px 0 22px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#6f5b91,#c5afea);transition:.4s}
+.heart-area,.catch-area{height:290px;position:relative;overflow:hidden;border-radius:20px;border:1px solid #42394e;background:#17141e;margin:18px 0}
+.float-heart{position:absolute;font-size:34px;cursor:pointer;animation:bob 1.3s infinite alternate}
+@keyframes bob{to{transform:translateY(-9px) rotate(8deg)}}
+.answers{display:grid;gap:10px;margin-top:18px}
+.answer{width:100%;background:#24202d}
+.good{background:#24583d!important}
+.bad{background:#63313b!important}
+.big-heart{font-size:95px;cursor:pointer;display:inline-block;animation:pulse 1s infinite alternate}
+@keyframes pulse{to{transform:scale(1.1)}}
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:18px}
+.memory-card{height:72px;border:1px solid #50445e;background:#26212e;border-radius:14px;display:grid;place-items:center;font-size:27px;cursor:pointer}
+.catch-star{position:absolute;font-size:38px;cursor:pointer}
+.reaction{height:180px;border:1px solid #50445e;border-radius:20px;background:#282431;display:grid;place-items:center;font-size:23px;font-weight:bold;margin:20px 0;cursor:pointer}
+.message{background:#201c27;border:1px solid #51445f;border-radius:20px;padding:20px;text-align:right;font-size:18px;line-height:2.15;margin:18px 0}
+.birthday-message{
+font-family:'Amiri',serif;
+font-size:24px;
+font-weight:bold;
+line-height:2.2;
+text-align:center;
+color:#f0e2ff;
+}
+textarea{width:100%;min-height:125px;background:#0e0d12;color:white;border:1px solid #625274;border-radius:15px;padding:14px;font:17px Arial;resize:vertical}
+.sound-toggle{position:fixed;left:12px;top:12px;z-index:5;width:auto;padding:9px 13px;font-size:14px;border-radius:30px}
+.small{font-size:13px}
+.confetti{position:fixed;top:-35px;pointer-events:none;z-index:10;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(600deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊 الصوت شغال</button>
+
+<main class="container">
+
+<section class="card" id="welcome">
+<div class="icon">🎁</div>
+<h1>هدية لايندو 🖤</h1>
+<p>كل سنة وانت طيب يا ايندو ❤️<br>عندك 7 مراحل لازم تعدّيهم عشان توصل للمفاجأة!</p>
+<button class="primary" onclick="startGame()">يلا نبدأ 🎮</button>
+</section>
+
+<section class="card hidden" id="game">
+<div class="topline">
+<span class="pill" id="stageLabel">المرحلة 1 من 7</span>
+<span class="pill">🖤 <span id="score">0</span>/100</span>
+</div>
+<div class="progress"><div class="fill" id="progressFill"></div></div>
+
+<div id="stage1">
+<div class="icon">❤️</div>
+<h2>اجمع القلوب</h2>
+<p>دوس على القلوب السبعة اللي قدامك!</p>
+<div class="heart-area" id="heartArea"></div>
+<p>القلوب المتبقية: <b id="heartLeft">7</b></p>
+</div>
+
+<div id="stage2" class="hidden">
+<div class="icon">🧠</div>
+<h2>اختبار ايندو</h2>
+<p id="questionText"></p>
+<div class="answers" id="answerList"></div>
+<p id="quizFeedback"></p>
+</div>
+
+<div id="stage3" class="hidden">
+<div class="icon">⚡</div>
+<h2>تحدي الضغطات</h2>
+<p>اضغط على القلب 15 مرة!</p>
+<div class="big-heart" onclick="tapHeart()">❤️</div>
+<p>ضغطاتك: <b id="tapCount">0</b>/15</p>
+</div>
+
+<div id="stage4" class="hidden">
+<div class="icon">🧩</div>
+<h2>لعبة الذاكرة</h2>
+<p>طابق الرموز المتشابهة كلها.</p>
+<div class="memory-grid" id="memoryGrid"></div>
+</div>
+
+<div id="stage5" class="hidden">
+<div class="icon">⭐</div>
+<h2>صيد النجوم</h2>
+<p>اجمع 8 نجوم عشان تكمل!</p>
+<div class="catch-area" id="catchArea"></div>
+<p>النجوم: <b id="starCount">0</b>/8</p>
+</div>
+
+<div id="stage6" class="hidden">
+<div class="icon">⚡</div>
+<h2>اختبار سرعة رد الفعل</h2>
+<p>استنى لحد ما تظهر كلمة اضغط الآن وبعدها دوس بسرعة!</p>
+<div class="reaction" id="reactionBox" onclick="reactionClick()">استنى... ⏳</div>
+<p id="reactionResult"></p>
+</div>
+
+<div id="stage7" class="hidden">
+<div class="icon">🎁</div>
+<h2>وصلت للمرحلة الأخيرة!</h2>
+<p>فاضل خطوة واحدة وتفتح هديتك يا ايندو ❤️</p>
+<button class="primary" onclick="finishGame()">افتح المفاجأة 💌</button>
+</div>
+</section>
+
+<section class="card hidden" id="final">
+<div class="icon">🎂</div>
+<div>✨ 🎉 ✨</div>
+<h1>كل سنة وانت طيب يا ايندو ❤️</h1>
+
+<div class="message birthday-message">
+كل سنه وانت طيب يا ايندو وعقبال 100 سنه
+
+<br>
+ودي هديه صغيره من معلمك لي عيد ميلادك
+
+<br>
+وان شاء الله حب اشوفك ف احسن احوالك
+
+<br>
+وانت من احسن ناس الي عرفتها
+
+<br>
+ويارب يا حب دايم تكون فرحان ❤️
+</div>
+
+<p>أتمنى السنة دي تكون مليانة فرحة ونجاح وتحقيق لكل اللي نفسك فيه 🖤</p>
+
+<div class="message">
+<h2 style="text-align:center">💌 رسالة منك ليا يا ايندو</h2>
+<p>بعد ما شوفت الهدية، حابب تقولي إيه؟ ❤️</p>
+<textarea id="ahmedReply" placeholder="اكتب رسالتك هنا يا ايندو..."></textarea>
+<button class="primary" onclick="sendReply()">إرسال الرسالة 💌</button>
+<p id="replyStatus" class="small" style="text-align:center"></p>
+</div>
+
+<button class="primary" onclick="celebrate()">احتفل بينا 🎉</button>
+</section>
+</main>
+
+<script>
+let soundOn=true,audioContext,score=0,reactionReady=false,reactionStart=0,reactionTimer;
+
+function tone(freq=500,duration=.12,type="sine",volume=.07){
+if(!soundOn)return;
+try{
+audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();
+if(audioContext.state==="suspended")audioContext.resume();
+let osc=audioContext.createOscillator(),gain=audioContext.createGain();
+osc.type=type;osc.frequency.value=freq;
+gain.gain.setValueAtTime(volume,audioContext.currentTime);
+gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);
+osc.connect(gain);gain.connect(audioContext.destination);
+osc.start();osc.stop(audioContext.currentTime+duration);
+}catch(e){}
+}
+function clickSound(){tone(650,.08,"triangle")}
+function successSound(){tone(650,.15);setTimeout(()=>tone(820,.18),150);setTimeout(()=>tone(1050,.25),300)}
+function errorSound(){tone(180,.2,"sawtooth")}
+function toggleSound(){
+soundOn=!soundOn;
+document.getElementById("soundToggle").innerText=soundOn?"🔊 الصوت شغال":"🔇 الصوت مقفول";
+if(soundOn)successSound();
+}
+function startGame(){
+clickSound();
+document.getElementById("welcome").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+createHearts();
+}
+function updateScore(amount){
+score=Math.min(100,score+amount);
+document.getElementById("score").innerText=Math.round(score);
+document.getElementById("progressFill").style.width=score+"%";
+}
+function showStage(n){
+for(let i=1;i<=7;i++)document.getElementById("stage"+i).classList.add("hidden");
+document.getElementById("stage"+n).classList.remove("hidden");
+document.getElementById("stageLabel").innerText="المرحلة "+n+" من 7";
+if(n===2)loadQuestion();
+if(n===4)startMemory();
+if(n===5)startStars();
+if(n===6)startReaction();
+}
+let heartsLeft=7;
+function createHearts(){
+const area=document.getElementById("heartArea");
+area.innerHTML="";heartsLeft=7;
+document.getElementById("heartLeft").innerText=7;
+for(let i=0;i<7;i++){
+let h=document.createElement("span");
+h.className="float-heart";h.innerText=["❤️","🖤","💜"][i%3];
+h.style.left=Math.random()*85+"%";h.style.top=Math.random()*80+"%";
+h.onclick=()=>{
+clickSound();h.remove();heartsLeft--;
+document.getElementById("heartLeft").innerText=heartsLeft;
+if(heartsLeft===0){successSound();updateScore(12.5);setTimeout(()=>showStage(2),600)}
+};
+area.appendChild(h);
+}
+}
+const questions=[
+{q:"احنا تعرفنا في أنهي نقابة؟",a:["جودين","تيتان","ماجيك","سكاي"],correct:1},
+{q:"إيه أكتر حاجة نتمنّاها لايندو؟",a:["الفرحة والنجاح ❤️","النكد 😂","الملل","التعب"],correct:0},
+{q:"الهدية دي معمولة لمين؟",a:["محمد","ايندو ❤️","علي","محمود"],correct:1},
+{q:"ايندو يستاهل كام من 100؟",a:["50","70","90","100 🖤"],correct:3}
+];
+let questionIndex=0;
+function loadQuestion(){
+let q=questions[questionIndex];
+document.getElementById("questionText").innerText=q.q;
+document.getElementById("quizFeedback").innerText="";
+let list=document.getElementById("answerList");list.innerHTML="";
+q.a.forEach((answer,i)=>{
+let btn=document.createElement("button");btn.className="answer";btn.innerText=answer;
+btn.onclick=()=>{
+if(btn.disabled)return;clickSound();
+if(i===q.correct){
+btn.classList.add("good");
+document.querySelectorAll(".answer").forEach(b=>b.disabled=true);
+document.getElementById("quizFeedback").innerText="إجابة صحيحة يا ايندو! ❤️";
+successSound();questionIndex++;
+if(questionIndex===questions.length){questionIndex=0;updateScore(12.5);setTimeout(()=>showStage(3),800)}
+else setTimeout(loadQuestion,850);
+}else{
+btn.classList.add("bad");
+document.getElementById("quizFeedback").innerText="غلط يا ايندو 😂 حاول تاني";
+errorSound();setTimeout(()=>btn.classList.remove("bad"),600);
+}
+};
+list.appendChild(btn);
+});
+}
+let taps=0;
+function tapHeart(){
+clickSound();taps++;document.getElementById("tapCount").innerText=taps;
+if(taps>=15){
+taps=0;successSound();updateScore(12.5);
+setTimeout(()=>{document.getElementById("tapCount").innerText=0;showStage(4)},500);
+}
+}
+let firstCard=null,secondCard=null,locked=false,matched=0;
+function startMemory(){
+const grid=document.getElementById("memoryGrid");grid.innerHTML="";
+firstCard=secondCard=null;locked=false;matched=0;
+let symbols=["❤️","🎀","🌸","🖤","⭐","🦋"];
+let cards=[...symbols,...symbols].sort(()=>Math.random()-.5);
+cards.forEach(symbol=>{
+let c=document.createElement("div");c.className="memory-card";c.innerText="❓";c.dataset.symbol=symbol;
+c.onclick=()=>{
+if(locked||c.innerText!=="❓")return;
+clickSound();c.innerText=symbol;
+if(!firstCard){firstCard=c;return}
+secondCard=c;locked=true;
+if(firstCard.dataset.symbol===secondCard.dataset.symbol){
+matched++;successSound();firstCard=secondCard=null;locked=false;
+if(matched===symbols.length){updateScore(12.5);setTimeout(()=>showStage(5),700)}
+}else{
+errorSound();setTimeout(()=>{firstCard.innerText="❓";secondCard.innerText="❓";firstCard=secondCard=null;locked=false},700);
+}
+};
+grid.appendChild(c);
+});
+}
+let stars=0;
+function startStars(){
+stars=0;document.getElementById("starCount").innerText=0;spawnStar();
+}
+function spawnStar(){
+let area=document.getElementById("catchArea");area.innerHTML="";
+let star=document.createElement("span");star.className="catch-star";star.innerText="⭐";
+star.style.left=(5+Math.random()*82)+"%";star.style.top=(5+Math.random()*78)+"%";
+star.onclick=()=>{
+clickSound();stars++;document.getElementById("starCount").innerText=stars;
+if(stars>=8){successSound();area.innerHTML="";updateScore(12.5);setTimeout(()=>showStage(6),600)}
+else spawnStar();
+};
+area.appendChild(star);
+}
+function startReaction(){
+let box=document.getElementById("reactionBox");
+document.getElementById("reactionResult").innerText="";
+reactionReady=false;box.innerText="استنى... ⏳";box.style.background="#282431";
+clearTimeout(reactionTimer);
+reactionTimer=setTimeout(()=>{
+reactionReady=true;reactionStart=performance.now();
+box.innerText="اضغط الآن! ⚡";box.style.background="#24583d";
+},1300+Math.random()*2500);
+}
+function reactionClick(){
+let box=document.getElementById("reactionBox");
+if(!reactionReady){
+clearTimeout(reactionTimer);box.innerText="بدري يا ايندو 😂 استنى الإشارة";
+errorSound();setTimeout(startReaction,900);return;
+}
+let ms=Math.round(performance.now()-reactionStart);
+document.getElementById("reactionResult").innerText="زمن رد فعلك: "+ms+" مللي ثانية ⚡";
+reactionReady=false;successSound();updateScore(12.5);setTimeout(()=>showStage(7),1000);
+}
+function finishGame(){
+clickSound();document.getElementById("game").classList.add("hidden");
+document.getElementById("final").classList.remove("hidden");celebrate();
+}
+function celebrate(){
+successSound();
+for(let i=0;i<45;i++){
+let el=document.createElement("div");el.className="confetti";
+el.innerText=["❤️","🖤","🎁","✨","🌸","⭐","🎉"][Math.floor(Math.random()*7)];
+el.style.left=Math.random()*100+"%";
+el.style.fontSize=(18+Math.random()*22)+"px";
+el.style.animationDuration=(3+Math.random()*4)+"s";
+document.body.appendChild(el);setTimeout(()=>el.remove(),7500);
+}
+}
+async function sendReply(){
+let message=document.getElementById("ahmedReply").value.trim();
+let status=document.getElementById("replyStatus");
+if(!message){status.innerText="اكتب رسالتك الأول يا ايندو 😂";errorSound();return}
+status.innerText="جاري إرسال الرسالة...";
+try{
+let response=await fetch("https://formspree.io/f/xppzronk",{
+method:"POST",
+headers:{"Content-Type":"application/json","Accept":"application/json"},
+body:JSON.stringify({message:message,subject:"رسالة من ايندو 💌"})
+});
+if(response.ok){
+status.innerText="وصلت رسالتك بنجاح ❤️";
+document.getElementById("ahmedReply").value="";successSound();
+}else{status.innerText="حصلت مشكلة في الإرسال. جرّب تاني.";errorSound()}
+}catch(e){status.innerText="تأكد من الإنترنت وجرب تاني.";errorSound()}
+}
+</script>
+</body>
+</html>
